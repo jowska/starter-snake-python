@@ -105,10 +105,26 @@ def move(game_state: typing.Dict) -> typing.Dict:
     # TODO: Step 3 - Prevent your Battlesnake from colliding with other Battlesnakes
     opponents = game_state['board']['snakes']
 
-    # Remove ourself from opponents list
+    unsafe_coords = []
+
     for opp in opponents:
+        # Remove ourself from opponents list
         if opp["name"] == "SnakeOne":
             opponents.remove(opp)
+        # Get coordinates occupied by opp
+        for coord in opp["body"]:
+            unsafe_coords.append(coord)
+
+    # Mark move unsafe if next to coord where an opp is
+    for coord in unsafe_coords:
+        if coord == left_head:
+            is_move_safe["left"] = False
+        if coord == right_head:
+            is_move_safe["right"] = False
+        if coord == up_head:
+            is_move_safe["up"] = False
+        if coord == down_head:
+            is_move_safe["down"] = False
 
     # Are there any safe moves left?
     safe_moves = []
@@ -133,8 +149,12 @@ def move(game_state: typing.Dict) -> typing.Dict:
     return {"move": next_move}
 
 
+def calc_gamestate_heuristic():
+    pass
+
+
 def get_move_options(safe_moves):
-    print(safe_moves)
+    pass
 
 
 def minimax(game_state, depth, maximizingPlayer):
