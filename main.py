@@ -227,16 +227,49 @@ def move(game_state: typing.Dict) -> typing.Dict:
 
         return safe_moves
 
+    def calculate_doable_food(my_head, opp, food):
+        doable_fruit = []
+        for fruit in food:
+            if calc_distance(my_head, fruit) < calc_distance(opp["body"][0], fruit):
+                doable_fruit.append(fruit)
+        return doable_fruit
+    
+    def does_move_get_closer_to_fruit(move, my_head, doable_fruit):
+        move_offsets = {'up': (0, -1), 'down': (0, 1),
+                        'left': (-1, 0), 'right': (1, 0)}
+        for fruit in doable_fruit:
+            offset = move_offsets[move]
+            if calc_distance(my_head, food) > calc_distance(my_head + offset, food):
+                return True
+
+
     def choose_best_move(state, depth):
+<<<<<<< Updated upstream
         best_move = None
+=======
+        best_moves = []
+        bestest_moves = []
+>>>>>>> Stashed changes
         best_score = float('-inf')
+        doable_fruit = calculate_doable_food(my_head, opp, food)
         for move in get_safe_moves():
+            if does_move_get_closer_to_fruit(move, my_head, doable_fruit):
+                bestest_moves.append(move)
             child_state = simulate_move(move, True)
             score = minimax(child_state, depth, False)
             if score > best_score:
                 best_score = score
+<<<<<<< Updated upstream
                 best_move = move
         return best_move
+=======
+                best_moves = [move]
+            elif score == best_score:
+                best_moves.append(move)
+        chosen_move = random.choice(best_moves) if best_moves else None
+        chosen_move = random.choice(bestest_moves) if bestest_moves else None
+        return chosen_move
+>>>>>>> Stashed changes
 
     next_move = choose_best_move(game_state, 3)
     print(f"MOVE {game_state['turn']}: {next_move}")
