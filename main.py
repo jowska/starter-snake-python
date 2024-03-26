@@ -21,7 +21,7 @@ import random
 # weight constants
 WEIGHT_LENGTH = 0.1
 WEIGHT_HEALTH = 0.2
-WEIGHT_FOOD_DISTANCE = -1.5
+WEIGHT_FOOD_DISTANCE = -0.3
 
 
 def info() -> typing.Dict:
@@ -109,6 +109,10 @@ def move(game_state: typing.Dict) -> typing.Dict:
         new_state = copy.deepcopy(game_state)
         snake = new_state['you'] if not is_maximizing_player else next(
             (s for s in new_state['board']['snakes'] if s['id'] != new_state['you']['id']), None)
+
+        if snake is None:
+            return new_state
+
         move_offsets = {'up': (0, -1), 'down': (0, 1),
                         'left': (-1, 0), 'right': (1, 0)}
         offset = move_offsets[move]
@@ -127,27 +131,28 @@ def move(game_state: typing.Dict) -> typing.Dict:
     def get_safe_moves():
         is_move_safe = {"up": True, "down": True, "left": True, "right": True}
 
-        # Add potential positions for the opponent's head
-        opp_head = opp['body'][0]
-        potential_opp_moves = [
-            {'x': opp_head['x'] - 1, 'y': opp_head['y']},
-            {'x': opp_head['x'] + 1, 'y': opp_head['y']},
-            {'x': opp_head['x'], 'y': opp_head['y'] - 1},
-            {'x': opp_head['x'], 'y': opp_head['y'] + 1}
-        ]
+        if opp:
+            # Add potential positions for the opponent's head
+            opp_head = opp['body'][0]
+            potential_opp_moves = [
+                {'x': opp_head['x'] - 1, 'y': opp_head['y']},
+                {'x': opp_head['x'] + 1, 'y': opp_head['y']},
+                {'x': opp_head['x'], 'y': opp_head['y'] - 1},
+                {'x': opp_head['x'], 'y': opp_head['y'] + 1}
+            ]
 
-        # Get the entire body of the opponent
-        opp_body = opp['body']
+            # Get the entire body of the opponent
+            opp_body = opp['body']
 
-        # Update is_move_safe based on potential opponent moves, own body, and opponent's body
-        if left_head in potential_opp_moves or left_head in my_body or left_head in opp_body:
-            is_move_safe["left"] = False
-        if right_head in potential_opp_moves or right_head in my_body or right_head in opp_body:
-            is_move_safe["right"] = False
-        if up_head in potential_opp_moves or up_head in my_body or up_head in opp_body:
-            is_move_safe["up"] = False
-        if down_head in potential_opp_moves or down_head in my_body or down_head in opp_body:
-            is_move_safe["down"] = False
+            # Update is_move_safe based on potential opponent moves, own body, and opponent's body
+            if left_head in potential_opp_moves or left_head in my_body or left_head in opp_body:
+                is_move_safe["left"] = False
+            if right_head in potential_opp_moves or right_head in my_body or right_head in opp_body:
+                is_move_safe["right"] = False
+            if up_head in potential_opp_moves or up_head in my_body or up_head in opp_body:
+                is_move_safe["up"] = False
+            if down_head in potential_opp_moves or down_head in my_body or down_head in opp_body:
+                is_move_safe["down"] = False
 
         # Prevent moving backwards
         if my_neck["x"] < my_head["x"]:  # Neck is left of head, don't move left
