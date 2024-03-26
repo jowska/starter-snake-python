@@ -14,6 +14,7 @@ import random
 import typing
 import math
 import copy
+import numpy
 
 # info is called when you create your Battlesnake on play.battlesnake.com
 # and controls your Battlesnake's appearance
@@ -235,23 +236,23 @@ def move(game_state: typing.Dict) -> typing.Dict:
         return doable_fruit
     
     def does_move_get_closer_to_fruit(move, my_head, doable_fruit):
-        move_offsets = {'up': (0, -1), 'down': (0, 1),
+        move_offsets = {'up': (0, 1), 'down': (0, -1),
                         'left': (-1, 0), 'right': (1, 0)}
         for fruit in doable_fruit:
             offset = move_offsets[move]
-            if calc_distance(my_head, food) > calc_distance(my_head + offset, food):
+            first = calc_distance(my_head, fruit)
+            my_head["x"] = my_head["x"] + offset[0]
+            my_head["y"] = my_head["y"] + offset[1]
+            if first > calc_distance(my_head, fruit):
                 return True
 
 
     def choose_best_move(state, depth):
-<<<<<<< Updated upstream
-        best_move = None
-=======
         best_moves = []
         bestest_moves = []
->>>>>>> Stashed changes
         best_score = float('-inf')
         doable_fruit = calculate_doable_food(my_head, opp, food)
+        print(get_safe_moves())
         for move in get_safe_moves():
             if does_move_get_closer_to_fruit(move, my_head, doable_fruit):
                 bestest_moves.append(move)
@@ -259,17 +260,17 @@ def move(game_state: typing.Dict) -> typing.Dict:
             score = minimax(child_state, depth, False)
             if score > best_score:
                 best_score = score
-<<<<<<< Updated upstream
-                best_move = move
-        return best_move
-=======
                 best_moves = [move]
             elif score == best_score:
                 best_moves.append(move)
-        chosen_move = random.choice(best_moves) if best_moves else None
+        print(bestest_moves)
+        print(best_moves)
         chosen_move = random.choice(bestest_moves) if bestest_moves else None
+        if chosen_move:
+            return chosen_move
+        else:
+            chosen_move = random.choice(best_moves) if best_moves else None
         return chosen_move
->>>>>>> Stashed changes
 
     next_move = choose_best_move(game_state, 3)
     print(f"MOVE {game_state['turn']}: {next_move}")
