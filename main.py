@@ -10,9 +10,7 @@
 # To get you started we've included code to prevent your Battlesnake from moving backwards.
 # For more info see docs.battlesnake.com
 
-import random
 import typing
-import math
 import copy
 
 # info is called when you create your Battlesnake on play.battlesnake.com
@@ -23,9 +21,6 @@ import copy
 WEIGHT_LENGTH = 0.1
 WEIGHT_HEALTH = 0.2
 WEIGHT_FOOD_DISTANCE = -0.3
-WEIGHT_SPACE = 0.4
-WEIGHT_CENTER_CONTROL = 0.2
-WEIGHT_TRAP_OPPONENT = 0.5
 
 
 def info() -> typing.Dict:
@@ -82,17 +77,6 @@ def move(game_state: typing.Dict) -> typing.Dict:
     # find distance between 2 coords
     def calc_distance(c1, c2):
         return abs(c1['x'] - c2['x']) + abs(c2['y'] - c1['y'])
-
-    # find where head would be at if we made a move
-    def get_move_coordinate(move):
-        if move == "left":
-            return left_head
-        if move == "right":
-            return right_head
-        if move == "up":
-            return up_head
-        if move == "down":
-            return down_head
 
     def heuristic():
         length_score = my_length * WEIGHT_LENGTH
