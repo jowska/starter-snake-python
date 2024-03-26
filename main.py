@@ -184,13 +184,8 @@ def move(game_state: typing.Dict) -> typing.Dict:
 
         unsafe_coords = []
 
-        for opp in opponents:
-            # Remove ourself from opponents list
-            if opp["name"] == "SnakeOne":
-                opponents.remove(opp)
-            # Get coordinates occupied by opp
-            for coord in opp["body"]:
-                unsafe_coords.append(coord)
+        for coord in opp["body"]:
+            unsafe_coords.append(coord)
 
         # Mark move unsafe if next to coord where an opp is
         for coord in unsafe_coords:
