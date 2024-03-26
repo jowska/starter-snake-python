@@ -40,19 +40,14 @@ def info() -> typing.Dict:
     }
 
 
-# start is called when your Battlesnake begins a game
 def start(game_state: typing.Dict):
     print("GAME START")
 
 
-# end is called when your Battlesnake finishes a game
 def end(game_state: typing.Dict):
     print("GAME OVER\n")
 
 
-# move is called on every turn and returns your next move
-# Valid moves are "up", "down", "left", or "right"
-# See https://docs.battlesnake.com/api/example-move for available data
 def move(game_state: typing.Dict) -> typing.Dict:
 
     me = game_state["you"]
@@ -144,6 +139,8 @@ def move(game_state: typing.Dict) -> typing.Dict:
             snake = opp
 
         # Update the snake's head position based on the move
+        if snake['body'][0] == None:
+            print("GAME OVER")  # print GAME OVER if crash here
         head = snake['body'][0]
         if move == 'up':
             new_head = {'x': head['x'], 'y': head['y'] - 1}
@@ -157,7 +154,7 @@ def move(game_state: typing.Dict) -> typing.Dict:
         # if head touches food, grow
         if new_head in n_state['board']['food']:
             n_state['you']['body'].insert(0, new_head)
-            n_state['my_food'].remove(new_head)
+            n_state['board']['food'].remove(new_head)
         else:  # move snake
             snake['body'].insert(0, new_head)
             snake['body'].pop()
@@ -230,17 +227,18 @@ def move(game_state: typing.Dict) -> typing.Dict:
 
         return safe_moves
 
-    safe_moves = get_safe_moves()
+    def choose_best_move(state, depth):
+        best_move = None
+        best_score = float('-inf')
+        for move in get_safe_moves():
+            child_state = simulate_move(move, True)
+            score = minimax(child_state, depth, False)
+            if score > best_score:
+                best_score = score
+                best_move = move
+        return best_move
 
-    """
-    if len(safe_moves) == 0:
-        print(f"MOVE {game_state['turn']
-                      }: No safe moves detected! Moving down")
-        return {"move": "down"}
-    """
-
-    next_move = minimax(game_state, 3, False)
-
+    next_move = choose_best_move(game_state, 3)
     print(f"MOVE {game_state['turn']}: {next_move}")
     return {"move": next_move}
 
